@@ -4,20 +4,22 @@ on:
 jobs:
   musescore4:
     runs-on: ubuntu-latest
-    container:
-      image: archlinux/archlinux:latest
-      env:
-        QT_QPA_PLATFORM: offscreen
-      volumes:
-        - ${{ github.workspace }}:/opt/scores
     steps:
       - name: Install musescore 4.7.7 and generate pdfs
         uses: actions/checkout@v4
       - run: |
-          pacman -Syyu --noconfirm
-          pacman -U --noconfirm https://archive.archlinux.org/packages/m/musescore/musescore-4.7.7-1-x86_64.pkg.tar.zst
-          pacman -S --noconfirm sed make tree coreutils xorg-server-xvfb libglvnd
-          cd /opt/scores && timeout 180 xvfb-run -s '-screen 0 640x480x24 -ac +extension GLX +render -noreset' /usr/bin/make
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt update
+          sudo apt install -y --no-install-suggests pipewire xvfb wget libopengl0 musescore ca-certificates at-spi2-core
+          wget -O musescore.appimage https://github.com/musescore/MuseScore/releases/download/v4.7.7/MuseScore-Studio-4.7.7.261109195-x86_64.AppImage
+          chmod +x musescore.appimage
+          sudo apt remove -y musescore
+          ./musescore.appimage --appimage-extract
+          rm musescore.appimage
+          export PATH=$PATH:squashfs-root/bin
+          export QT_QPA_PLATFORM=offscreen
+          ldd squashfs-root/bin/mscore4portable
+          timeout 180 xvfb-run -s '-screen 0 640x480x24 -ac +extension GLX +render -noreset' /usr/bin/make MSCORE=mscore4portable
 
       - name: Retain pdfs
         uses: actions/upload-artifact@v7
