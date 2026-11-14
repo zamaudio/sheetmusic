@@ -16,8 +16,8 @@ jobs:
       - run: |
           pacman -Syyu --noconfirm
           pacman -U --noconfirm https://archive.archlinux.org/packages/m/musescore/musescore-4.7.7-1-x86_64.pkg.tar.zst
-          pacman -S --noconfirm sed make tree
-          cd /opt/scores && make && tree
+          pacman -S --noconfirm sed make tree coreutils xorg-server-xvfb libglvnd
+          cd /opt/scores && timeout 180 xvfb-run -s '-screen 0 640x480x24 -ac +extension GLX +render -noreset' /usr/bin/make
 
       - name: Retain pdfs
         uses: actions/upload-artifact@v7
