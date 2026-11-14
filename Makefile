@@ -1,4 +1,4 @@
-MSCORE?=mscore4
+MSCORE?=mscore
 
 MSCZ=$(wildcard *.mscz)
 
@@ -9,7 +9,9 @@ all: $(PDF)
 $(PDF): %.pdf : %.mscz
 	cp template.in $*.json
 	sed -i -e "s/{FILE}/$*/g" "$*.json"
-	$(MSCORE) -j "$*.json" && mkdir -p "out/$*" && mv "$*"*.pdf "out/$*/" || true
+	$(MSCORE) -j "$*.json" 2>&1
+	mkdir -p "out/$*"
+	mv "$*"*.pdf "out/$*/"
 
 clean:
 	rm -fr *.json out/

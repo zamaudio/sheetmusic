@@ -1,4 +1,3 @@
-name: Generate mscz to pdfs
 on:
   push:
     branches: [ master ]
@@ -12,16 +11,17 @@ jobs:
       volumes:
         - ${{ github.workspace }}:/opt/scores
     steps:
-      - name: Install deps and musescore 4.7.7
-        run: |
+      - name: Install musescore 4.7.7 and generate pdfs
+        uses: actions/checkout@v4
+      - run: |
           pacman -Syyu --noconfirm
           pacman -U --noconfirm https://archive.archlinux.org/packages/m/musescore/musescore-4.7.7-1-x86_64.pkg.tar.zst
           pacman -S --noconfirm sed make tree
-      - name: Generate pdfs
-        run: |
-          cd /opt/scores
-          make
-      - name: Show outputs
-        run: |
-          cd /opt/scores/out
-          tree
+          cd /opt/scores && make && tree
+
+      - name: Retain pdfs
+        uses: actions/upload-artifact@v7
+        with:
+          name: pdfs
+          path: out/
+          archive: false
