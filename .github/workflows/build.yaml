@@ -1,0 +1,27 @@
+name: Generate mscz to pdfs
+on:
+  push:
+    branches: [ master ]
+jobs:
+  musescore4:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux/archlinux:latest
+      env:
+        QT_QPA_PLATFORM: offscreen
+      volumes:
+        - .:/opt/scores
+    steps:
+      - name: Install deps and musescore 4.7.7
+        run: |
+          pacman -Syyu --noconfirm
+          pacman -U --noconfirm https://archive.archlinux.org/packages/m/musescore/musescore-4.7.7-1-x86_64.pkg.tar.zst
+          pacman -S --noconfirm sed make tree
+      - name: Generate pdfs
+        run: |
+          cd /opt/scores
+          make
+      - name: Show outputs
+        run: |
+          cd /opt/scores/out
+          tree

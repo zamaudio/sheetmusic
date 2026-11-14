@@ -1,0 +1,12 @@
+[
+    {
+        "in": "{FILE}.mscz",
+        "out": [
+            "{FILE}.pdf",
+            [
+                "{FILE}__",
+                ".pdf"
+            ]
+        ]
+    }
+]
