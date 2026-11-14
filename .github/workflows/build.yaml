@@ -10,7 +10,7 @@ jobs:
       env:
         QT_QPA_PLATFORM: offscreen
       volumes:
-        - .:/opt/scores
+        - ${{ github.workspace }}:/opt/scores
     steps:
       - name: Install deps and musescore 4.7.7
         run: |
